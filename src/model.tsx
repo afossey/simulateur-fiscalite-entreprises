@@ -8,6 +8,11 @@ export enum BusinessType {
   SERVICES_LIBERAL = 'SERVICES_LIBERAL'
 }
 
+export enum BusinessNature {
+  BIC = 'BIC',
+  BNC = 'BNC'
+}
+
 export const IncomeTaxScale = types.model({
       firstScale: 9964,
       firstScaleRate: 0,
@@ -58,7 +63,7 @@ export const IncomeTaxScale = types.model({
 
 export const AEBusiness = types.model({
       type: types.enumeration(Object.values(BusinessType)),
-      nature: types.union(types.literal('BIC'), types.literal('BNC'))
+      nature: types.enumeration('BusinessNature', Object.values(BusinessNature))
     }
 ).views(self => ({
       get taxeableIncomePercent(): number {
