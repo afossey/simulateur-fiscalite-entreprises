@@ -92,7 +92,7 @@ export const Accre = types.model({
 
 export const AEConfig = types.model({
   // Legal year of the config
-  effectiveYear: types.string,
+  effectiveYear: '2019',
 
   // ACCRE reduction rates
   accre: types.optional(Accre, {}),
@@ -100,7 +100,20 @@ export const AEConfig = types.model({
   incomeTaxScale: types.optional(IncomeTaxScale, {}),
 
   // Possible businesses for AE
-  businesses: types.array(AEBusiness),
+  businesses: types.optional(types.array(AEBusiness), [
+    AEBusiness.create({
+      type: BusinessType.BUY_SELL,
+      nature: BusinessNature.BIC}),
+    AEBusiness.create({
+      type: BusinessType.FURNISHED_RENTAL_CLASSED_FOR_TOURISM,
+      nature: BusinessNature.BIC}),
+    AEBusiness.create({
+      type: BusinessType.SERVICES_LIBERAL,
+      nature: BusinessNature.BNC}),
+    AEBusiness.create({
+      type: BusinessType.RENTAL,
+      nature: BusinessNature.BIC})
+  ]),
 });
 
 export const FinancialData = types
@@ -152,10 +165,11 @@ export const AEStore = types
   .model( {
     financialData: types.optional(FinancialData, {}),
     companyData: types.optional(CompanyData, {}),
-    businessType: types.enumeration('BusinessType', Object.values(BusinessType)),
+    businessType: types.optional(types.enumeration('BusinessType', Object.values(BusinessType)),
+        BusinessType.SERVICES_LIBERAL),
     hasVFL: false,
     hasACCRE: false,
-    config: AEConfig
+    config: types.optional(AEConfig, {})
   })
   .actions( self => ({
         setOptionVFL(newHasVFL: boolean) {
