@@ -1,72 +1,56 @@
 import React, {Component} from 'react';
-import {
-  AppBar,
-  createMuiTheme,
-  CssBaseline,
-  Grid,
-  MuiThemeProvider,
-  Theme,
-  Toolbar,
-  Typography
-} from "@material-ui/core";
-import {AEStore} from "./model";
-import {observer} from "mobx-react";
+import {createMuiTheme, CssBaseline, MuiThemeProvider, Theme} from "@material-ui/core";
 import {MuiPickersUtilsProvider} from "material-ui-pickers";
 import MomentUtils from '@date-io/moment';
 import moment from "moment";
 import "moment/locale/fr";
-import {FinanceComponent} from "./FinanceComponent";
-import {CompanyComponent} from "./CompanyComponent";
-import {ReportComponent} from "./ReportComponent";
 import {blue} from "@material-ui/core/colors";
+import {BrowserRouter, Route} from "react-router-dom";
+import {AEComponent} from "./components/AEComponent";
+import {AppBarComponent} from "./components/AppBarComponent";
+import {AppStore} from "./model/stores";
+import {Instance} from "mobx-state-tree";
+import {PageType} from "./model/enums";
 
-@observer
-class App extends Component<{}, { aeStore: any, theme: Theme }> {
-  constructor(props: any) {
+interface AppState {
+  appStore: Instance<typeof AppStore>;
+  theme: Theme;
+}
+
+class App extends Component<{}, AppState> {
+  constructor(props: Readonly<any>) {
     super(props);
 
     moment.locale('fr');
 
-    const theme = createMuiTheme({
-      palette: {
-        primary: blue
-      }
-    });
-
     this.state = {
-      aeStore: AEStore.create({}),
-      theme: theme
+      appStore: AppStore.create({ currentPage: PageType.AE_SIMULATOR }),
+      theme: createMuiTheme({
+        palette: {
+          primary: blue
+        },
+        typography: {
+          useNextVariants: true
+        }
+      })
     };
   }
 
   render() {
     return (
-        <MuiThemeProvider theme={this.state.theme}>
-          <MuiPickersUtilsProvider utils={MomentUtils} moment={moment} locale={"fr"}>
-            <CssBaseline />
-            <div>
-              <AppBar position="static">
-                <Toolbar>
-                  <Typography variant="h6" color={"inherit"}>
-                    Simulateur AE - 2019
-                  </Typography>
-                </Toolbar>
-              </AppBar>
-              <Grid container spacing={24} justify={"center"} wrap={"wrap"} style={styles.aeView}>
-                <FinanceComponent financialData={this.state.aeStore.financialData}/>
-                <CompanyComponent aeStore={this.state.aeStore}/>
-                <ReportComponent aeStore={this.state.aeStore}/>
-              </Grid>
-            </div>
-          </MuiPickersUtilsProvider>
-        </MuiThemeProvider>
+        <BrowserRouter>
+          <MuiThemeProvider theme={this.state.theme}>
+            <MuiPickersUtilsProvider utils={MomentUtils} moment={moment} locale={"fr"}>
+              <CssBaseline />
+              <div>
+                <AppBarComponent appStore={this.state.appStore} />
+                <Route path="/" component={AEComponent} />
+              </div>
+            </MuiPickersUtilsProvider>
+          </MuiThemeProvider>
+        </BrowserRouter>
     );
   }
 }
 
-const styles = {
-  aeView: {
-    padding: 25
-  }
-};
 export default App;

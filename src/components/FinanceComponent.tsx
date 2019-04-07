@@ -1,11 +1,17 @@
 import React, {ChangeEvent, Component} from "react";
 import {Card, CardContent, Grid, TextField, Typography} from "@material-ui/core";
 import {observer} from "mobx-react";
+import {Instance} from "mobx-state-tree";
+import {FinancialStore} from "../model/stores";
+
+interface FinanceComponentProps {
+  financialData: Instance<typeof FinancialStore>;
+}
 
 @observer
-export class FinanceComponent extends Component<any> {
+export class FinanceComponent extends Component<FinanceComponentProps> {
 
-  constructor(props: Readonly<any>) {
+  constructor(props: Readonly<FinanceComponentProps>) {
     super(props);
   }
 

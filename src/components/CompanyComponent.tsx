@@ -12,15 +12,20 @@ import {
   Typography
 } from "@material-ui/core";
 import {DatePicker} from "material-ui-pickers";
-import {BusinessType} from "./model";
+import {AEStore} from "../model/stores";
 import {MaterialUiPickersDate} from "material-ui-pickers/typings/date";
 import {Moment} from "moment";
 import {observer} from "mobx-react";
+import {Instance} from "mobx-state-tree";
+import {BusinessType} from "../model/enums";
 
+interface CompanyComponentProps {
+  aeStore: Instance<typeof AEStore>;
+}
 @observer
-export class CompanyComponent extends Component<any> {
+export class CompanyComponent extends Component<CompanyComponentProps> {
 
-  constructor(props: Readonly<any>) {
+  constructor(props: Readonly<CompanyComponentProps>) {
     super(props);
   }
 

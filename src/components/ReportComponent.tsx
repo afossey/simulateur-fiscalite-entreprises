@@ -10,13 +10,19 @@ import {
   TableRow,
   Typography
 } from "@material-ui/core";
-import {Commons} from "./Commons";
+import {Commons} from "../Commons";
 import {observer} from "mobx-react";
+import {Instance} from "mobx-state-tree";
+import {AEStore} from "../model/stores";
+
+interface ReportComponentProps {
+  aeStore: Instance<typeof AEStore>;
+}
 
 @observer
-export class ReportComponent extends Component<any> {
+export class ReportComponent extends Component<ReportComponentProps> {
   
-  constructor(props: Readonly<any>) {
+  constructor(props: Readonly<ReportComponentProps>) {
     super(props);
   }
 
@@ -33,9 +39,9 @@ export class ReportComponent extends Component<any> {
             <Table>
               <TableBody>
 
-                <TableRow key={"Profits"}>
+                <TableRow key={"Recettes"}>
                   <TableCell component="th">
-                    Profits
+                    Recettes
                   </TableCell>
                   <TableCell>
                     { Commons.getEuroAmountLabel(this.props.aeStore.financialData.profits) }
@@ -51,9 +57,9 @@ export class ReportComponent extends Component<any> {
                   </TableCell>
                 </TableRow>
 
-                <TableRow key={"Profits après charges sociales"}>
+                <TableRow key={"Bénéfices après charges sociales"}>
                   <TableCell component="th">
-                    Profits après charges sociales
+                    Bénéfices après charges sociales
                   </TableCell>
                   <TableCell>
                     {Commons.getEuroAmountLabel(this.props.aeStore.profitsAfterSocialCharges())}
@@ -78,9 +84,9 @@ export class ReportComponent extends Component<any> {
                   </TableCell>
                 </TableRow>
 
-                <TableRow key={"Profits après charges sociales et impôt sur le revenu"}>
+                <TableRow key={"Bénéfices après charges sociales et impôt sur le revenu"}>
                   <TableCell component="th">
-                    Profits après charges sociales et impôt sur le revenu
+                    Bénéfices après charges sociales et impôt sur le revenu
                   </TableCell>
                   <TableCell>
                     {Commons.getEuroAmountLabel(this.props.aeStore.profitsAfterSocialChargesAndIncomeTax())}
