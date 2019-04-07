@@ -85,9 +85,9 @@ export const AEBusiness = types.model({
 );
 
 export const Accre = types.model({
-  firstYearMultiplier: 0.75,
+  firstYearMultiplier: 0.25,
   secondYearMultiplier: 0.5,
-  thirdYearMultiplier: 0.25
+  thirdYearMultiplier: 0.75
 });
 
 export const AEConfig = types.model({
@@ -116,7 +116,12 @@ export const FinancialData = types
         self.charges = newCharges;
       }
     })
-  );
+  )
+  .views(self => ({
+    get profits(): number {
+      return self.annualRevenueWithoutTaxes - self.charges;
+    }
+  }));
 
 export const CompanyData = types
   .model( {
@@ -147,7 +152,7 @@ export const AEStore = types
   .model( {
     financialData: types.optional(FinancialData, {}),
     companyData: types.optional(CompanyData, {}),
-    businessData: AEBusiness,
+    businessType: types.enumeration('BusinessType', Object.values(BusinessType)),
     hasVFL: false,
     hasACCRE: false,
     config: AEConfig
@@ -160,42 +165,74 @@ export const AEStore = types
           self.hasACCRE = newHasACCRE;
         },
         selectBusiness(businessType: BusinessType) {
-          const business = self.config.businesses.find(business => business.type === businessType);
-          if(business) self.businessData = business;
-          else console.error('Unsupported Business Type');
+          self.businessType = businessType;
         }
       })
   )
   .views(self => {
+      const businessData = function(): any {
+        const business = self.config.businesses.find(business => business.type === self.businessType);
+        if(business) return business;
+        throw Error('Unsupported Business Type');
+      };
+
+      const averageIncomeTaxRate = function(): number {
+        if(self.hasVFL) {
+          return businessData().vflRate;
+        } else if(self.financialData.annualRevenueWithoutTaxes > 0) {
+          return incomeTaxForYear() / self.financialData.annualRevenueWithoutTaxes;
+        } else {
+          return 0;
+        }
+      };
+
+      const socialChargesRate = function(): number {
+        return self.hasACCRE ? accreSocialCharges() : businessData().socialCharges;
+      };
       const socialChargesForYear = function(): number {
         if(self.hasACCRE) {
           return self.financialData.annualRevenueWithoutTaxes * accreSocialCharges();
         } else {
-          return self.financialData.annualRevenueWithoutTaxes * self.businessData.socialCharges;
+          return self.financialData.annualRevenueWithoutTaxes * businessData().socialCharges;
         }
       };
+
+      const profitsAfterSocialCharges = function() {
+        return self.financialData.profits - socialChargesForYear();
+      };
+
       const accreSocialCharges = function(): number {
           if(self.companyData.isFirstYear) {
-            return self.config.accre.firstYearMultiplier * self.businessData.socialCharges;
+            return self.config.accre.firstYearMultiplier * businessData().socialCharges;
           }
           if(self.companyData.isSecondYear) {
-            return self.config.accre.secondYearMultiplier * self.businessData.socialCharges;
+            return self.config.accre.secondYearMultiplier * businessData().socialCharges;
           }
           if(self.companyData.isThirdYear) {
-            return self.config.accre.thirdYearMultiplier * self.businessData.socialCharges;
+            return self.config.accre.thirdYearMultiplier * businessData().socialCharges;
           }
-          return self.businessData.socialCharges;
+          return businessData().socialCharges;
       };
+
       const taxeableIncome = function(): number {
-        return self.financialData.annualRevenueWithoutTaxes * self.businessData.taxeableIncomePercent;
+        if(self.hasVFL) return self.financialData.annualRevenueWithoutTaxes;
+        return self.financialData.annualRevenueWithoutTaxes * businessData().taxeableIncomePercent;
       };
+
       const incomeTaxForYear = function(): number {
          if(self.hasVFL) {
-           return self.businessData.vflRate * self.financialData.annualRevenueWithoutTaxes;
+           return businessData().vflRate * self.financialData.annualRevenueWithoutTaxes;
          } else {
            return self.config.incomeTaxScale.computeIncomeTax(taxeableIncome());
          }
       };
-      return { socialChargesForYear, accreSocialCharges, incomeTaxForYear, taxeableIncome};
+
+      const profitsAfterSocialChargesAndIncomeTax = function() {
+        return profitsAfterSocialCharges() - incomeTaxForYear();
+      };
+
+      return { socialChargesRate, socialChargesForYear, accreSocialCharges, incomeTaxForYear,
+        taxeableIncome, businessData, averageIncomeTaxRate, profitsAfterSocialCharges,
+        profitsAfterSocialChargesAndIncomeTax };
     }
   );
