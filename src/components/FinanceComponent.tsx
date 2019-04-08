@@ -1,13 +1,12 @@
 import React, {ChangeEvent, Component} from "react";
-import {Card, CardContent, Grid, TextField, Typography} from "@material-ui/core";
+import {Card, CardContent, TextField, Typography} from "@material-ui/core";
 import {observer} from "mobx-react";
 import {Instance} from "mobx-state-tree";
-import {FinancialStore} from "../model/stores";
+import {FinancialStore} from "../model/Stores";
 
 interface FinanceComponentProps {
   financialData: Instance<typeof FinancialStore>;
 }
-
 @observer
 export class FinanceComponent extends Component<FinanceComponentProps> {
 
@@ -28,7 +27,6 @@ export class FinanceComponent extends Component<FinanceComponentProps> {
 
   render() {
     return (
-        <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography component={"h6"} variant={"h6"}>
@@ -54,7 +52,6 @@ export class FinanceComponent extends Component<FinanceComponentProps> {
               />
             </CardContent>
           </Card>
-        </Grid>
-    )
+    );
   }
 }

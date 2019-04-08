@@ -8,9 +8,9 @@ import {blue} from "@material-ui/core/colors";
 import {BrowserRouter, Route} from "react-router-dom";
 import {AEComponent} from "./components/AEComponent";
 import {AppBarComponent} from "./components/AppBarComponent";
-import {AppStore} from "./model/stores";
+import {AppStore} from "./model/Stores";
 import {Instance} from "mobx-state-tree";
-import {PageType} from "./model/enums";
+import {PageType} from "./model/Enums";
 
 interface AppState {
   appStore: Instance<typeof AppStore>;

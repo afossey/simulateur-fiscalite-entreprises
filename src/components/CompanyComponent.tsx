@@ -5,19 +5,18 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   Typography
 } from "@material-ui/core";
 import {DatePicker} from "material-ui-pickers";
-import {AEStore} from "../model/stores";
+import {AEStore} from "../model/Stores";
 import {MaterialUiPickersDate} from "material-ui-pickers/typings/date";
 import {Moment} from "moment";
 import {observer} from "mobx-react";
 import {Instance} from "mobx-state-tree";
-import {BusinessType} from "../model/enums";
+import {BusinessType} from "../model/Enums";
 
 interface CompanyComponentProps {
   aeStore: Instance<typeof AEStore>;
@@ -51,7 +50,6 @@ export class CompanyComponent extends Component<CompanyComponentProps> {
 
   render() {
     return (
-        <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography component={"h6"} variant={"h6"}>
@@ -113,7 +111,6 @@ export class CompanyComponent extends Component<CompanyComponentProps> {
               </FormControl>
             </CardContent>
           </Card>
-        </Grid>
     );
   }
 }

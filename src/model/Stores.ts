@@ -1,7 +1,7 @@
 import {Instance, types} from "mobx-state-tree";
 import moment from "moment";
-import {BusinessNature, BusinessType, PageType} from "./enums";
-import {IncomeTaxScale} from "./income-tax-scale";
+import {BusinessNature, BusinessType, PageType} from "./Enums";
+import {IncomeTaxScale} from "./IncomeTaxScale";
 
 export const AEBusinessStore = types.model({
       type: types.enumeration(Object.values(BusinessType)),
@@ -10,7 +10,7 @@ export const AEBusinessStore = types.model({
 ).views(self => ({
       get taxeableIncomePercent(): number {
         if (self.type === (BusinessType.BUY_SELL || BusinessType.FURNISHED_RENTAL_CLASSED_FOR_TOURISM)) return (1 - 0.71);
-        if (self.nature === 'BIC') return 0.5;
+        if (self.nature === BusinessNature.BIC) return 0.5;
         else return (1 - 0.34);
       },
       get socialCharges(): number {
@@ -22,6 +22,20 @@ export const AEBusinessStore = types.model({
         if (self.type.BUY_SELL) return 0.01;
         if (self.nature === 'BIC') return 0.017;
         else return 0.022;
+      },
+      get grossAnnualRevenueThreshold(): number {
+        if(self.type === (BusinessType.BUY_SELL || BusinessType.FURNISHED_RENTAL_CLASSED_FOR_TOURISM)) {
+          return 170000;
+        } else {
+          return 70000;
+        }
+      },
+      get tvaThreshold(): number {
+        if(self.type === (BusinessType.BUY_SELL || BusinessType.FURNISHED_RENTAL_CLASSED_FOR_TOURISM)) {
+          return 82800;
+        } else {
+          return 33200;
+        }
       }
     })
 );
@@ -77,6 +91,7 @@ export const AEStore = types.model({
       BusinessType.SERVICES_LIBERAL),
   hasVFL: false,
   hasACCRE: false,
+  tvaThreshold: 33200,
   businesses: types.optional(types.array(AEBusinessStore), [
     AEBusinessStore.create({
       type: BusinessType.BUY_SELL,
@@ -104,15 +119,16 @@ export const AEStore = types.model({
         self.hasACCRE = newHasACCRE;
       },
       selectBusiness(businessType: BusinessType) {
-        self.businessType = businessType;
+        if(self.businesses.find(business => business.type === businessType))
+          self.businessType = businessType;
       }
     })
 )
 .views(self => {
       const businessData = function (): Instance<typeof AEBusinessStore> {
         const business = self.businesses.find(business => business.type === self.businessType);
-        if (business) return business;
-        throw Error('Unsupported Business Type');
+       if(business) return business;
+       throw Error('Unsupported Business Type');
       };
 
       const averageIncomeTaxRate = function (): number {
@@ -166,10 +182,19 @@ export const AEStore = types.model({
         return profitsAfterSocialCharges() - incomeTaxForYear();
       };
 
+      const hasCrossedTvaThreshold = function(): boolean {
+        return self.financialData.annualRevenueWithoutTaxes > businessData().tvaThreshold;
+      };
+
+      const hasCrossedGrossAnnualRevenueThreshold = function(): boolean {
+        return self.financialData.annualRevenueWithoutTaxes > businessData().grossAnnualRevenueThreshold;
+      };
+
       return {
         socialChargesRate, socialChargesForYear, incomeTaxForYear,
         taxeableIncome, businessData, averageIncomeTaxRate, profitsAfterSocialCharges,
-        profitsAfterSocialChargesAndIncomeTax, accreMultiplier
+        profitsAfterSocialChargesAndIncomeTax, accreMultiplier, hasCrossedTvaThreshold,
+        hasCrossedGrossAnnualRevenueThreshold
       };
     }
 );

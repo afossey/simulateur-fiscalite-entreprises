@@ -1,11 +1,13 @@
 import React, {Component} from "react";
 import {FinanceComponent} from "./FinanceComponent";
 import {CompanyComponent} from "./CompanyComponent";
-import {ReportComponent} from "./ReportComponent";
+import {SimulationComponent} from "./SimulationComponent";
 import {Grid} from "@material-ui/core";
-import {AEStore} from "../model/stores";
+import {AEStore} from "../model/Stores";
 import {Instance} from "mobx-state-tree";
 import {observer} from "mobx-react";
+import {AESimulationHintComponent} from "./AESimulationHintComponent";
+import {AESimulationWarningComponent} from "./AESimulationWarningComponent";
 
 interface AEComponentState {
   aeStore: Instance<typeof AEStore>;
@@ -23,10 +25,26 @@ export class AEComponent extends Component<{}, AEComponentState> {
 
   render() {
     return(
-        <Grid container spacing={24} justify={"center"} wrap={"wrap"} style={styles.aeView}>
-          <FinanceComponent financialData={this.state.aeStore.financialData}/>
-          <CompanyComponent aeStore={this.state.aeStore}/>
-          <ReportComponent aeStore={this.state.aeStore}/>
+        <Grid container spacing={24} wrap={"wrap"} style={styles.aeView}>
+          <Grid item xs={12} md={6}>
+            <FinanceComponent financialData={this.state.aeStore.financialData}/>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <CompanyComponent aeStore={this.state.aeStore}/>
+          </Grid>
+          <Grid item xs={12} lg={6}>
+            <Grid container spacing={24}>
+              <Grid item xs={12}>
+                <AESimulationHintComponent aeStore={this.state.aeStore}/>
+              </Grid>
+              <Grid item xs={12}>
+                <AESimulationWarningComponent/>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} lg={6}>
+            <SimulationComponent aeStore={this.state.aeStore}/>
+          </Grid>
         </Grid>
     );
   }

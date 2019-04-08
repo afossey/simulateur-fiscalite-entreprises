@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {AppBar, IconButton, Link, SvgIcon, Toolbar, Typography} from "@material-ui/core";
 import {Instance} from "mobx-state-tree";
-import {AppStore} from "../model/stores";
+import {AppStore} from "../model/Stores";
 
 interface AppBarProps {
   appStore: Instance<typeof AppStore>;

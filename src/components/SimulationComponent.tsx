@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   Divider,
-  Grid,
   Table,
   TableBody,
   TableCell,
@@ -13,14 +12,14 @@ import {
 import {Commons} from "../Commons";
 import {observer} from "mobx-react";
 import {Instance} from "mobx-state-tree";
-import {AEStore} from "../model/stores";
+import {AEStore} from "../model/Stores";
 
 interface ReportComponentProps {
   aeStore: Instance<typeof AEStore>;
 }
 
 @observer
-export class ReportComponent extends Component<ReportComponentProps> {
+export class SimulationComponent extends Component<ReportComponentProps> {
   
   constructor(props: Readonly<ReportComponentProps>) {
     super(props);
@@ -28,7 +27,6 @@ export class ReportComponent extends Component<ReportComponentProps> {
 
   render() {
     return(
-        <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography component={"h6"} variant={"h6"}>
@@ -86,7 +84,7 @@ export class ReportComponent extends Component<ReportComponentProps> {
 
                 <TableRow key={"Bénéfices après charges sociales et impôt sur le revenu"}>
                   <TableCell component="th">
-                    Bénéfices après charges sociales et impôt sur le revenu
+                    Bénéfices après déduction de toutes les charges et impôts
                   </TableCell>
                   <TableCell>
                     {Commons.getEuroAmountLabel(this.props.aeStore.profitsAfterSocialChargesAndIncomeTax())}
@@ -96,7 +94,6 @@ export class ReportComponent extends Component<ReportComponentProps> {
             </Table>
 
           </Card>
-        </Grid>
     );
   }
 }
