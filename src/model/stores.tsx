@@ -2,7 +2,6 @@ import {Instance, types} from "mobx-state-tree";
 import moment from "moment";
 import {BusinessNature, BusinessType, PageType} from "./enums";
 import {IncomeTaxScale} from "./income-tax-scale";
-import {Accre} from "./accre";
 
 export const AEBusinessStore = types.model({
       type: types.enumeration(Object.values(BusinessType)),
@@ -127,31 +126,27 @@ export const AEStore = types.model({
       };
 
       const socialChargesRate = function (): number {
-        return self.hasACCRE ? accreSocialCharges() : businessData().socialCharges;
+        return self.hasACCRE ? accreMultiplier() * businessData().socialCharges : businessData().socialCharges;
       };
       const socialChargesForYear = function (): number {
-        if (self.hasACCRE) {
-          return self.financialData.annualRevenueWithoutTaxes * accreSocialCharges();
-        } else {
-          return self.financialData.annualRevenueWithoutTaxes * businessData().socialCharges;
-        }
+        return self.financialData.annualRevenueWithoutTaxes * socialChargesRate();
       };
 
       const profitsAfterSocialCharges = function () {
         return self.financialData.profits - socialChargesForYear();
       };
 
-      const accreSocialCharges = function (): number {
+      const accreMultiplier = function(): number {
         if (self.companyData.isFirstYear) {
-          return Accre.firstYearMultiplier * businessData().socialCharges;
+          return 0.25;
         }
         if (self.companyData.isSecondYear) {
-          return Accre.secondYearMultiplier * businessData().socialCharges;
+          return 0.5;
         }
         if (self.companyData.isThirdYear) {
-          return Accre.thirdYearMultiplier * businessData().socialCharges;
+          return 0.75;
         }
-        return businessData().socialCharges;
+        return 1;
       };
 
       const taxeableIncome = function (): number {
@@ -172,9 +167,9 @@ export const AEStore = types.model({
       };
 
       return {
-        socialChargesRate, socialChargesForYear, accreSocialCharges, incomeTaxForYear,
+        socialChargesRate, socialChargesForYear, incomeTaxForYear,
         taxeableIncome, businessData, averageIncomeTaxRate, profitsAfterSocialCharges,
-        profitsAfterSocialChargesAndIncomeTax
+        profitsAfterSocialChargesAndIncomeTax, accreMultiplier
       };
     }
 );

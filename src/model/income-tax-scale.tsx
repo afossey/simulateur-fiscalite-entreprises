@@ -1,14 +1,14 @@
 export class IncomeTaxScale {
   private static readonly firstScale = 9964;
-  private static readonly firstScaleRate: 0;
-  private static readonly secondScale: 27519;
-  private static readonly secondScaleRate: 0.14;
-  private static readonly thirdScale: 73779;
-  private static readonly thirdScaleRate: 0.3;
-  private static readonly fourthScale: 156244;
-  private static readonly fourthScaleRate: 0.41;
-  private static readonly beyondRate: 0.45;
-  
+  private static readonly firstScaleRate = 0;
+  private static readonly secondScale = 27519;
+  private static readonly secondScaleRate = 0.14;
+  private static readonly thirdScale = 73779;
+  private static readonly thirdScaleRate = 0.3;
+  private static readonly fourthScale = 156244;
+  private static readonly fourthScaleRate = 0.41;
+  private static readonly beyondRate = 0.45;
+
   public static computeIncomeTax(taxeableIncome: number): number {
     let incomeTax = 0;
 
