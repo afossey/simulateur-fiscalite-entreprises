@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 
-export class AESimulationWarningComponent extends Component {
+export class SimulationWarningComponent extends Component {
 
   constructor(props: Readonly<any>) {
     super(props);

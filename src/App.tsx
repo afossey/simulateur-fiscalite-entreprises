@@ -6,7 +6,7 @@ import moment from "moment";
 import "moment/locale/fr";
 import {blue} from "@material-ui/core/colors";
 import {BrowserRouter, Route} from "react-router-dom";
-import {AEComponent} from "./components/AEComponent";
+import {SimulatorComponent} from "./components/SimulatorComponent";
 import {AppBarComponent} from "./components/AppBarComponent";
 import {AppStore} from "./model/Stores";
 import {Instance} from "mobx-state-tree";
@@ -24,7 +24,7 @@ class App extends Component<{}, AppState> {
     moment.locale('fr');
 
     this.state = {
-      appStore: AppStore.create({ currentPage: PageType.AE_SIMULATOR }),
+      appStore: AppStore.create({ currentPage: PageType.SIMULATOR }),
       theme: createMuiTheme({
         palette: {
           primary: blue
@@ -44,7 +44,7 @@ class App extends Component<{}, AppState> {
               <CssBaseline />
               <div>
                 <AppBarComponent appStore={this.state.appStore} />
-                <Route path="/" component={AEComponent} />
+                <Route path="/" component={SimulatorComponent} />
               </div>
             </MuiPickersUtilsProvider>
           </MuiThemeProvider>

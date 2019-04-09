@@ -11,5 +11,12 @@ export enum BusinessNature {
 }
 
 export enum PageType {
-  AE_SIMULATOR = 'Simulateur AE'
+  SIMULATOR = 'Simulateur de fiscalité'
+}
+
+export enum CompanyLegalStatus {
+  AE = 'AE',
+  SASU = 'SASU',
+  EIRL = 'EIRL',
+  EURL = 'EURL'
 }

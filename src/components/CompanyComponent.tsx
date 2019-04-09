@@ -5,21 +5,23 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
+  Grid,
   InputLabel,
   MenuItem,
   Select,
   Typography
 } from "@material-ui/core";
 import {DatePicker} from "material-ui-pickers";
-import {AEStore} from "../model/Stores";
+import {CompanyStore} from "../model/Stores";
 import {MaterialUiPickersDate} from "material-ui-pickers/typings/date";
 import {Moment} from "moment";
 import {observer} from "mobx-react";
 import {Instance} from "mobx-state-tree";
-import {BusinessType} from "../model/Enums";
+import {BusinessType, CompanyLegalStatus} from "../model/Enums";
+import {FinanceComponent} from "./FinanceComponent";
 
 interface CompanyComponentProps {
-  aeStore: Instance<typeof AEStore>;
+  company: Instance<typeof CompanyStore>;
 }
 @observer
 export class CompanyComponent extends Component<CompanyComponentProps> {
@@ -30,22 +32,22 @@ export class CompanyComponent extends Component<CompanyComponentProps> {
 
   private updateCreationDate = (date: MaterialUiPickersDate) => {
     const nativeDate = (date as Moment).toDate();
-    this.props.aeStore.companyData.setCreationDate(nativeDate);
+    this.props.company.setCreationDate(nativeDate);
   };
 
   private selectBusiness = (event: ChangeEvent<HTMLSelectElement>) => {
     const businessType = event.target.value as BusinessType;
-    this.props.aeStore.selectBusiness(businessType);
+    this.props.company.selectBusiness(businessType);
   };
 
   private updateACCRE = (event: ChangeEvent<HTMLInputElement>) => {
     const hasACCRE = event.target.checked as boolean;
-    this.props.aeStore.setOptionACCRE(hasACCRE);
+    this.props.company.setOptionACCRE(hasACCRE);
   };
 
   private updateVFL = (event: ChangeEvent<HTMLInputElement>) => {
     const hasVFL = event.target.checked as boolean;
-    this.props.aeStore.setOptionVFL(hasVFL);
+    this.props.company.setOptionVFL(hasVFL);
   };
 
   render() {
@@ -55,25 +57,43 @@ export class CompanyComponent extends Component<CompanyComponentProps> {
               <Typography component={"h6"} variant={"h6"}>
                 Entreprise
               </Typography>
+              <Grid container wrap={"wrap"}>
+                <Grid item xs={6}>
+                  <FormControl margin={"normal"} fullWidth={true}>
+                    <DatePicker
+                        label="Date de création"
+                        value={this.props.company.creationDate}
+                        format={"DD/MM/YYYY"}
+                        disableFuture
+                        onChange={this.updateCreationDate}
+                        animateYearScrolling
+                        fullWidth={true}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6}>
+                  <FormControl fullWidth={true} margin={"normal"}>
+                    <InputLabel htmlFor="company-legal-status">Statut juridique</InputLabel>
+                    <Select
+                        value={this.props.company.legalStatus}
+                        inputProps={{
+                          name: 'company-legal-status',
+                          id: 'company-legal-status',
+                        }}
+                    >
+                      <MenuItem value={CompanyLegalStatus.AE}>AE</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
               <FormControl fullWidth={true} margin={"normal"}>
-                <DatePicker
-                    label="Date de création"
-                    value={this.props.aeStore.companyData.creationDate}
-                    format={"DD/MM/YYYY"}
-                    disableFuture
-                    onChange={this.updateCreationDate}
-                    animateYearScrolling
-                    fullWidth={true}
-                />
-              </FormControl>
-              <FormControl fullWidth={true} margin={"normal"}>
-                <InputLabel htmlFor="ae-activity">Activité</InputLabel>
+                <InputLabel htmlFor="company-business">Activité</InputLabel>
                 <Select
-                    value={this.props.aeStore.businessData().type}
+                    value={this.props.company.business.type}
                     onChange={this.selectBusiness}
                     inputProps={{
-                      name: 'ae-activity',
-                      id: 'ae-activity',
+                      name: 'company-business',
+                      id: 'company-business',
                     }}
                 >
                   <MenuItem value={BusinessType.BUY_SELL}>Vente de marchandises et fourniture
@@ -85,10 +105,11 @@ export class CompanyComponent extends Component<CompanyComponentProps> {
                   <MenuItem value={BusinessType.RENTAL}>Location d'habitation meublée</MenuItem>
                 </Select>
               </FormControl>
+              <FinanceComponent finance={this.props.company.finance}/>
               <FormControl fullWidth={true}>
                 <FormControlLabel control={
                   <Checkbox
-                      checked={this.props.aeStore.hasACCRE}
+                      checked={this.props.company.hasACCRE}
                       onChange={this.updateACCRE}
                       value="ACCRE"
                       color="primary"
@@ -100,7 +121,7 @@ export class CompanyComponent extends Component<CompanyComponentProps> {
               <FormControl fullWidth={true}>
                 <FormControlLabel control={
                   <Checkbox
-                      checked={this.props.aeStore.hasVFL}
+                      checked={this.props.company.hasVFL}
                       onChange={this.updateVFL}
                       value="VFL"
                       color="primary"

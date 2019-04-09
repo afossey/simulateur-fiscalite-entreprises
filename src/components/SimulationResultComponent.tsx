@@ -12,16 +12,16 @@ import {
 import {Commons} from "../Commons";
 import {observer} from "mobx-react";
 import {Instance} from "mobx-state-tree";
-import {AEStore} from "../model/Stores";
+import {SimulatorStore} from "../model/Stores";
 
-interface ReportComponentProps {
-  aeStore: Instance<typeof AEStore>;
+interface SimulationResultComponentProps {
+  simulator: Instance<typeof SimulatorStore>;
 }
 
 @observer
-export class SimulationComponent extends Component<ReportComponentProps> {
+export class SimulationResultComponent extends Component<SimulationResultComponentProps> {
   
-  constructor(props: Readonly<ReportComponentProps>) {
+  constructor(props: Readonly<SimulationResultComponentProps>) {
     super(props);
   }
 
@@ -39,10 +39,10 @@ export class SimulationComponent extends Component<ReportComponentProps> {
 
                 <TableRow key={"Recettes"}>
                   <TableCell component="th">
-                    Recettes
+                    Recettes HT
                   </TableCell>
                   <TableCell>
-                    { Commons.getEuroAmountLabel(this.props.aeStore.financialData.profits) }
+                    { Commons.getEuroAmountLabel(this.props.simulator.company.finance.profits) }
                   </TableCell>
                 </TableRow>
 
@@ -51,7 +51,7 @@ export class SimulationComponent extends Component<ReportComponentProps> {
                     Taux de charges sociales
                   </TableCell>
                   <TableCell>
-                    {Commons.getPercentLabel(this.props.aeStore.socialChargesRate())}
+                    {Commons.getPercentLabel(this.props.simulator.socialChargesRate())}
                   </TableCell>
                 </TableRow>
 
@@ -60,7 +60,7 @@ export class SimulationComponent extends Component<ReportComponentProps> {
                     Bénéfices après charges sociales
                   </TableCell>
                   <TableCell>
-                    {Commons.getEuroAmountLabel(this.props.aeStore.profitsAfterSocialCharges())}
+                    {Commons.getEuroAmountLabel(this.props.simulator.profitsAfterSocialCharges())}
                   </TableCell>
                 </TableRow>
 
@@ -69,7 +69,7 @@ export class SimulationComponent extends Component<ReportComponentProps> {
                     Revenus imposable
                   </TableCell>
                   <TableCell>
-                    {Commons.getEuroAmountLabel(this.props.aeStore.taxeableIncome())}
+                    {Commons.getEuroAmountLabel(this.props.simulator.taxeableIncome())}
                   </TableCell>
                 </TableRow>
 
@@ -78,16 +78,25 @@ export class SimulationComponent extends Component<ReportComponentProps> {
                     Taux moyen d'imposition sur le revenu
                   </TableCell>
                   <TableCell>
-                    {Commons.getPercentLabel(this.props.aeStore.averageIncomeTaxRate())}
+                    {Commons.getPercentLabel(this.props.simulator.averageIncomeTaxRate())}
                   </TableCell>
                 </TableRow>
 
                 <TableRow key={"Bénéfices après charges sociales et impôt sur le revenu"}>
                   <TableCell component="th">
-                    Bénéfices après déduction de toutes les charges et impôts
+                    Bénéfices après déduction des charges et impôts (net)
                   </TableCell>
                   <TableCell>
-                    {Commons.getEuroAmountLabel(this.props.aeStore.profitsAfterSocialChargesAndIncomeTax())}
+                    {Commons.getEuroAmountLabel(this.props.simulator.profitsAfterSocialChargesAndIncomeTax())}
+                  </TableCell>
+                </TableRow>
+
+                <TableRow key={"Bénéfices net mensuel"}>
+                  <TableCell component="th">
+                    Bénéfices net / mois
+                  </TableCell>
+                  <TableCell>
+                    {Commons.getEuroAmountLabel(this.props.simulator.profitsAfterSocialChargesAndIncomeTax() / 12)}
                   </TableCell>
                 </TableRow>
               </TableBody>
