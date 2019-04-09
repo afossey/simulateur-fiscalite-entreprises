@@ -94,7 +94,7 @@ export class CompanyComponent extends Component<CompanyComponentProps> {
                       color="primary"
                   />
                 }
-                                  label={"Exonération de début d'activité"}>
+                                  label={"Exonération de début d'activité (ex-ACCRE)"}>
                 </FormControlLabel>
               </FormControl>
               <FormControl fullWidth={true}>
@@ -106,7 +106,7 @@ export class CompanyComponent extends Component<CompanyComponentProps> {
                       color="primary"
                   />
                 }
-                                  label={"Versement fiscal libératoire"}>
+                                  label={"Versement fiscal libératoire (VFL)"}>
                 </FormControlLabel>
               </FormControl>
             </CardContent>

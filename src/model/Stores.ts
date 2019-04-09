@@ -165,6 +165,15 @@ export const AEStore = types.model({
         return 1;
       };
 
+      const grossAnnualIncomeProrataTemporisThreshold = function(): number {
+        if(self.companyData.isFirstYear) {
+          const dayCountInYear = 365;
+          return ((dayCountInYear - self.companyData.creationDayOfTheYear) * businessData().grossAnnualRevenueThreshold) / dayCountInYear;
+        } else {
+          return businessData().grossAnnualRevenueThreshold;
+        }
+      };
+
       const taxeableIncome = function (): number {
         if (self.hasVFL) return self.financialData.annualRevenueWithoutTaxes;
         return self.financialData.annualRevenueWithoutTaxes * businessData().taxeableIncomePercent;
@@ -178,6 +187,10 @@ export const AEStore = types.model({
         }
       };
 
+      const diffBetweenVFLAndRegularIncomeTax = function (): number {
+          return businessData().vflRate * self.financialData.annualRevenueWithoutTaxes - IncomeTaxScale.computeIncomeTax(taxeableIncome());
+      };
+
       const profitsAfterSocialChargesAndIncomeTax = function () {
         return profitsAfterSocialCharges() - incomeTaxForYear();
       };
@@ -186,15 +199,16 @@ export const AEStore = types.model({
         return self.financialData.annualRevenueWithoutTaxes > businessData().tvaThreshold;
       };
 
-      const hasCrossedGrossAnnualRevenueThreshold = function(): boolean {
-        return self.financialData.annualRevenueWithoutTaxes > businessData().grossAnnualRevenueThreshold;
+      const hasCrossedGrossAnnualRevenueThresholdProrataTemporis = function(): boolean {
+        return self.financialData.annualRevenueWithoutTaxes > grossAnnualIncomeProrataTemporisThreshold();
       };
 
       return {
         socialChargesRate, socialChargesForYear, incomeTaxForYear,
         taxeableIncome, businessData, averageIncomeTaxRate, profitsAfterSocialCharges,
         profitsAfterSocialChargesAndIncomeTax, accreMultiplier, hasCrossedTvaThreshold,
-        hasCrossedGrossAnnualRevenueThreshold
+        hasCrossedGrossAnnualRevenueThresholdProrataTemporis, grossAnnualIncomeProrataTemporisThreshold,
+        diffBetweenVFLAndRegularIncomeTax
       };
     }
 );
