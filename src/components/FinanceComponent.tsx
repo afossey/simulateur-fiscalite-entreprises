@@ -28,22 +28,24 @@ export class FinanceComponent extends Component<FinanceComponentProps> {
   render() {
     return (
         <Grid container wrap={"wrap"}>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
               <TextField
                   id="ae-revenue"
                   label="Chiffre d'affaire annuel € HT"
                   defaultValue={0}
+                  placeholder={'0'}
                   onChange={this.updateAnnualRevenue}
                   margin="normal"
                   type="number"
                   fullWidth={true}
               />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
               <TextField
                   id="ae-charges"
                   label="Charges annuel € HT"
                   defaultValue={0}
+                  placeholder={'0'}
                   onChange={this.updateCharges}
                   margin="normal"
                   type="number"

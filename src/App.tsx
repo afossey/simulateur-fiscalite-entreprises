@@ -11,6 +11,7 @@ import {AppBarComponent} from "./components/AppBarComponent";
 import {AppStore} from "./model/Stores";
 import {Instance} from "mobx-state-tree";
 import {PageType} from "./model/Enums";
+import ReactGA from 'react-ga'
 
 interface AppState {
   appStore: Instance<typeof AppStore>;
@@ -21,6 +22,7 @@ class App extends Component<{}, AppState> {
   constructor(props: Readonly<any>) {
     super(props);
 
+    ReactGA.initialize('UA-138305460-1');
     moment.locale('fr');
 
     this.state = {

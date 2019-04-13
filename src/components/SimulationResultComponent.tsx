@@ -96,7 +96,7 @@ export class SimulationResultComponent extends Component<SimulationResultCompone
                     Bénéfices net / mois
                   </TableCell>
                   <TableCell>
-                    {Commons.getEuroAmountLabel(this.props.simulator.profitsAfterSocialChargesAndIncomeTax() / 12)}
+                    {Commons.getEuroAmountLabel(this.props.simulator.profitsAfterSocialChargesAndIncomeTax() / this.props.simulator.company.averageRemainingMonths)}
                   </TableCell>
                 </TableRow>
               </TableBody>

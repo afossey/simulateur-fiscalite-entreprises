@@ -77,9 +77,10 @@ export const CompanyStore = types.model({
     const business = self.businesses.find(business => business.type === self.businessType);
     if(business) return business;
     throw Error('Unsupported Business Type');
-  }
-}))
-.views(self => ({
+  },
+  get creationDayOfTheYear(): number {
+    return moment(self.creationDate).dayOfYear() - 1;
+  },
   get isFirstYear(): boolean {
     return moment(self.creationDate).year() === moment().year();
   },
@@ -88,9 +89,12 @@ export const CompanyStore = types.model({
   },
   get isThirdYear(): boolean {
     return moment(self.creationDate).add(2, 'years').year() === moment().year();
-  },
-  get creationDayOfTheYear(): number {
-    return moment(self.creationDate).dayOfYear();
+  }
+}))
+.views(self => ({
+  get averageRemainingMonths(): number {
+    if (self.isFirstYear) return 12 - (self.creationDayOfTheYear / 365) * 12;
+    else return 12;
   },
   get taxeableIncomePercent(): number {
     if (self.business.type === (BusinessType.BUY_SELL || BusinessType.FURNISHED_RENTAL_CLASSED_FOR_TOURISM)) return (1 - 0.71);
@@ -166,7 +170,7 @@ export const SimulatorStore = types.model({
     const grossAnnualIncomeProrataTemporisThreshold = function(): number {
       if(self.company.isFirstYear) {
         const dayCountInYear = 365;
-        return ((dayCountInYear - (self.company.creationDayOfTheYear-1)) * self.company.grossAnnualRevenueThreshold) / dayCountInYear;
+        return ((dayCountInYear - self.company.creationDayOfTheYear) * self.company.grossAnnualRevenueThreshold) / dayCountInYear;
       } else {
         return self.company.grossAnnualRevenueThreshold;
       }
