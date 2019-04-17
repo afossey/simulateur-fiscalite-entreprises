@@ -134,7 +134,7 @@ export const SimulatorStore = types.model({
 .views(self => {
 
     const averageIncomeTaxRate = function (): number {
-      if (self.company.hasACCRE) {
+      if (self.company.hasVFL) {
         return self.company.vflRate;
       } else if (self.company.finance.annualRevenueWithoutTaxes > 0) {
         return incomeTaxForYear() / self.company.finance.annualRevenueWithoutTaxes;
