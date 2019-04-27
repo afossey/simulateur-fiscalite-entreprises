@@ -23,6 +23,7 @@ class App extends Component<{}, AppState> {
     super(props);
 
     ReactGA.initialize('UA-138305460-1');
+    ReactGA.pageview(window.location.pathname + window.location.search);
     moment.locale('fr');
 
     this.state = {
