@@ -144,10 +144,25 @@ export const SimulatorStore = types.model({
     };
 
     const socialChargesRate = function (): number {
-      return self.company.hasACCRE ? accreMultiplier() * self.company.socialCharges : self.company.socialCharges;
+      if (self.company.finance.annualRevenueWithoutTaxes === 0) {
+        return 0;
+      }
+      return socialChargesForYear() / self.company.finance.annualRevenueWithoutTaxes;
     };
     const socialChargesForYear = function (): number {
-      return self.company.finance.annualRevenueWithoutTaxes * socialChargesRate();
+      const annualRevenue = self.company.finance.annualRevenueWithoutTaxes;
+
+      if (self.company.hasACCRE) {
+        const reducedSocialCharges = accreMultiplier() * self.company.socialCharges;
+        const revenueEligibleACCRE = 40524 / self.company.taxeableIncomePercent;
+        if (annualRevenue <= revenueEligibleACCRE) {
+          return annualRevenue * reducedSocialCharges;
+        } else {
+          return (revenueEligibleACCRE * reducedSocialCharges)
+              + ((annualRevenue - revenueEligibleACCRE) * self.company.socialCharges);
+        }
+      }
+      return annualRevenue * self.company.socialCharges;
     };
 
     const profitsAfterSocialCharges = function () {
