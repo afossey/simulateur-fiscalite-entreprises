@@ -29,7 +29,7 @@ export const FinancialStore = types.model({
 }));
 
 export const CompanyStore = types.model({
-  creationDate: new Date('2019/01/01'),
+  creationDate: new Date('2020/01/01'),
   legalStatus: types.optional(types.enumeration('CompanyLegalStatus', Object.values(CompanyLegalStatus)),
       CompanyLegalStatus.AE),
   businessType: types.optional(types.enumeration('BusinessType', Object.values(BusinessType)),
@@ -128,7 +128,7 @@ export const CompanyStore = types.model({
 }));
 
 export const SimulatorStore = types.model({
-  legalYear: '2019',
+  legalYear: '2020',
   company: types.optional(CompanyStore, {}),
 })
 .views(self => {
@@ -137,7 +137,7 @@ export const SimulatorStore = types.model({
       if (self.company.hasVFL) {
         return self.company.vflRate;
       } else if (self.company.finance.annualRevenueWithoutTaxes > 0) {
-        return incomeTaxForYear() / self.company.finance.annualRevenueWithoutTaxes;
+        return incomeTaxForYear() /taxeableIncome();
       } else {
         return 0;
       }
@@ -149,18 +149,12 @@ export const SimulatorStore = types.model({
       }
       return socialChargesForYear() / self.company.finance.annualRevenueWithoutTaxes;
     };
+
     const socialChargesForYear = function (): number {
       const annualRevenue = self.company.finance.annualRevenueWithoutTaxes;
-
       if (self.company.hasACCRE) {
         const reducedSocialCharges = accreMultiplier() * self.company.socialCharges;
-        const revenueEligibleACCRE = 40524 / self.company.taxeableIncomePercent;
-        if (annualRevenue <= revenueEligibleACCRE) {
-          return annualRevenue * reducedSocialCharges;
-        } else {
-          return (revenueEligibleACCRE * reducedSocialCharges)
-              + ((annualRevenue - revenueEligibleACCRE) * self.company.socialCharges);
-        }
+        return annualRevenue * reducedSocialCharges;
       }
       return annualRevenue * self.company.socialCharges;
     };
@@ -171,13 +165,13 @@ export const SimulatorStore = types.model({
 
     const accreMultiplier = function(): number {
       if (self.company.isFirstYear) {
-        return 0.25;
-      }
-      if (self.company.isSecondYear) {
         return 0.5;
       }
-      if (self.company.isThirdYear) {
+      if (self.company.isSecondYear) {
         return 0.75;
+      }
+      if (self.company.isThirdYear) {
+        return 0.9;
       }
       return 1;
     };
